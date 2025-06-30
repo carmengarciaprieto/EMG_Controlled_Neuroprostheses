@@ -131,35 +131,8 @@ public class EMGCalibration {
             }
             envelope[i] = sum / count;
         }
-
-        // 🔽 Normalización por el valor máximo
-       // double max = Arrays.stream(envelope).max().orElse(1.0); // evitar división por cero
-        //for (int i = 0; i < envelope.length; i++) {
-          //  envelope[i] /= max;
-        //}
-
         return envelope;
     }
-
-    /*public static double[] smoothEnvelopeRMS(double[] signal, int windowSize) {
-    int n = signal.length;
-    double[] envelope = new double[n];
-
-    for (int i = 0; i < n; i++) {
-        double sumSquares = 0;
-        int count = 0;
-        for (int j = -windowSize; j <= windowSize; j++) {
-            int idx = i + j;
-            if (idx >= 0 && idx < n) {
-                sumSquares += signal[idx] * signal[idx];
-                count++;
-            }
-        }
-        envelope[i] = Math.sqrt(sumSquares / count);
-    }
-
-    return envelope;
-}*/
 
     //Método clásico basado en k*std
     public static ContractionResult detectContractions(double[] envelope, int fs, double kOn, double kOff, double minDurationSec) {
@@ -201,50 +174,6 @@ public class EMGCalibration {
 
         return new ContractionResult(envelope, thresholdOn, thresholdOff, validOnsets, validOffsets);
     }
-
-    /*public static ContractionResult detectContractions(double[] envelope, int fs, double percentageOn, double percentageOff, double minDurationSec) {
-        // Calcular la media de la envolvente (RMS media)
-        double meanRMS = Arrays.stream(envelope).average().orElse(0);
-
-        // Calcular thresholds como porcentajes de la RMS media
-        double thresholdOn = meanRMS * percentageOn;
-        double thresholdOff = meanRMS * percentageOff;
-
-        boolean inside = false;
-        ArrayList<Integer> onsets = new ArrayList<>();
-        ArrayList<Integer> offsets = new ArrayList<>();
-
-        for (int i = 0; i < envelope.length; i++) {
-            if (!inside && envelope[i] > thresholdOn) {
-                inside = true;
-                onsets.add(i);
-            } else if (inside && envelope[i] < thresholdOff) {
-                inside = false;
-                offsets.add(i);
-            }
-        }
-
-        // Alineación de onsets y offsets
-        if (!onsets.isEmpty() && !offsets.isEmpty() && offsets.get(0) < onsets.get(0)) {
-            offsets.remove(0);
-        }
-        if (onsets.size() > offsets.size()) {
-            onsets = new ArrayList<>(onsets.subList(0, offsets.size()));
-        }
-
-        // Filtrar contracciones cortas
-        int minSamples = (int) (minDurationSec * fs);
-        ArrayList<Integer> validOnsets = new ArrayList<>();
-        ArrayList<Integer> validOffsets = new ArrayList<>();
-        for (int i = 0; i < onsets.size(); i++) {
-            if (offsets.get(i) - onsets.get(i) >= minSamples) {
-                validOnsets.add(onsets.get(i));
-                validOffsets.add(offsets.get(i));
-            }
-        }
-
-        return new ContractionResult(envelope, thresholdOn, thresholdOff, validOnsets, validOffsets);
-    }*/
 
     public static void showCalibrationCharts(double[] mv, double[] notch, double[] filtered, ContractionResult result, int fs) {
         SwingUtilities.invokeLater(() -> {

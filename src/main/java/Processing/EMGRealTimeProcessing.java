@@ -11,15 +11,15 @@ import uk.me.berndporr.iirj.Butterworth;
 
 public class EMGRealTimeProcessing {
 
-    private final int windowSize;         // Tamaño de la ventana para media móvil (en muestras)
-    private final double thresholdOn;     // Umbral para activar FES
-    private final double thresholdOff;    // Umbral para desactivar FES
+    private final int windowSize;         
+    private final double thresholdOn;     
+    private final double thresholdOff;   
     private final double amplitud;
     private final double frecuencia;
     private final double anchoPulso;
     private final String usuario;
     private long startTime = -1;
-    private final int warmUpMillis = 5000; // 5 segundos de "calentamiento"
+    private final int warmUpMillis = 5000; 
 
     private final LinkedList<Double> buffer = new LinkedList<>();
     private boolean fesActivo = false;
@@ -32,7 +32,7 @@ public class EMGRealTimeProcessing {
     // Filtros Butterworth
     private Butterworth notchFilter;
     private Butterworth bandpassFilter;
-    private final int fs = 1000; // frecuencia de muestreo (Hz)
+    private final int fs = 1000; 
 
     public EMGRealTimeProcessing(int windowSize, double thresholdOn, double thresholdOff, String puerto, double amplitud, double frecuencia, double anchoPulso, String usuario) {
         this.windowSize = windowSize;
@@ -45,10 +45,10 @@ public class EMGRealTimeProcessing {
 
         // Inicializa filtros
         notchFilter = new Butterworth();
-        notchFilter.bandStop(4, fs, 50.0, 0.8);   // Notch filter para 50 Hz con ancho banda 2 Hz
+        notchFilter.bandStop(4, fs, 50.0, 0.8);   
 
         bandpassFilter = new Butterworth();
-        bandpassFilter.bandPass(4, fs, 20.0, 450.0);  // Bandpass filter 20-450 Hz
+        bandpassFilter.bandPass(4, fs, 20.0, 450.0);  
 
         // Inicializa FES
         fes = new FESControls(puerto, amplitud, frecuencia, anchoPulso);
@@ -91,7 +91,7 @@ public class EMGRealTimeProcessing {
         double envelope = sum / buffer.size();
 
         // Debug: imprimir envelope y estado actual de FES
-        System.out.println(String.format("Envelope: %.4f, FES activo: %b", envelope, fesActivo));
+        //System.out.println(String.format("Envelope: %.4f, FES activo: %b", envelope, fesActivo));
 
         // Guardar valor para análisis posterior
         emgValues.add(envelope);
