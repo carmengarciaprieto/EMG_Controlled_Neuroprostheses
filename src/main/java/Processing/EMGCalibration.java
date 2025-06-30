@@ -10,7 +10,7 @@ import uk.me.berndporr.iirj.Butterworth;
 
 public class EMGCalibration {
 
-    public static ContractionResult calculateThreshold(ArrayList<Integer> rawData, int fs) {
+    public static ContractionResult calculateThreshold(ArrayList<Integer> rawData, int fs) { // static means the method can be called without creating an instance of the class
         int[] raw = new int[rawData.size()];
         for (int i = 0; i < rawData.size(); i++) {
             raw[i] = rawData.get(i);
@@ -20,14 +20,13 @@ public class EMGCalibration {
         double[] notch = applyNotchFilter(mv, fs, 50.0, 0.8);
         double[] filtered = applyBandpassFilter(notch, fs);
 
-        //se elminia valores NaN (not a number) o valores infinitos
+        // Remove NaN (Not a Number) or infinite values
         for (int i = 0; i < filtered.length; i++) {
             if (Double.isNaN(filtered[i]) || Double.isInfinite(filtered[i])) {
                 filtered[i] = 0;
             }
         }
 
-        //double[] envelope = smoothEnvelope(filtered, 25);
         double[] envelope = smoothEnvelope(filtered, 25);
 
         ContractionResult result = detectContractions(envelope, fs, 0.25, 0.15, 0.2);
@@ -68,7 +67,7 @@ public class EMGCalibration {
         return magnitude;
     }
 
-    //genera el eje de frecuencias para N muestras y fs frecuencia de muestreo
+    // Generates the frequency axis for N samples and sampling rate fs
     public static double[] generateFrequencies(int N, int fs) {
         double[] freqs = new double[N / 2];
         for (int i = 0; i < freqs.length; i++) {
@@ -77,7 +76,7 @@ public class EMGCalibration {
         return freqs;
     }
 
-    //calcula la menor potencia de dos que sea mayor al numero de muestras n
+    // Calculates the next power of two greater than n
     private static int nextPowerOfTwo(int n) {
         int pow = 1;
         while (pow < n) {
@@ -95,7 +94,7 @@ public class EMGCalibration {
             filtered[i] = notch.filter(signal[i]);
 
             if (Double.isNaN(filtered[i]) || Double.isInfinite(filtered[i])) {
-                System.out.println("⚠️ Notch NaN detectado en index " + i);
+                System.out.println("⚠️ Notch NaN detected at index " + i);
                 filtered[i] = 0;
             }
         }
@@ -134,7 +133,7 @@ public class EMGCalibration {
         return envelope;
     }
 
-    //Método clásico basado en k*std
+    // Classic method based on k*std
     public static ContractionResult detectContractions(double[] envelope, int fs, double kOn, double kOff, double minDurationSec) {
         double mean = Arrays.stream(envelope).average().orElse(0);
         double std = Math.sqrt(Arrays.stream(envelope).map(v -> Math.pow(v - mean, 2)).average().orElse(0));
@@ -178,11 +177,11 @@ public class EMGCalibration {
     public static void showCalibrationCharts(double[] mv, double[] notch, double[] filtered, ContractionResult result, int fs) {
         SwingUtilities.invokeLater(() -> {
             EMGDashboard.clear();
-            EMGDashboard.addChart(mv, fs, "EMG - Señal original en el tiempo");
-            EMGDashboard.addChart(mv, fs, "EMG - Espectro original", true);
-            EMGDashboard.addChart(notch, fs, "EMG - Espectro tras Notch 50 Hz", true);
-            EMGDashboard.addChart(filtered, fs, "EMG - Espectro tras Bandpass 20–450 Hz", true);
-            EMGDashboard.addEnvelopeChart(result.getEnvelope(), result.getThresholdOn(), result.getThresholdOff(), fs, "EMG - Envolvente + Thresholds");
+            EMGDashboard.addChart(mv, fs, "EMG - Raw Signal in Time Domain");
+            EMGDashboard.addChart(mv, fs, "EMG - Raw Spectrum", true);
+            EMGDashboard.addChart(notch, fs, "EMG - Spectrum After 50 Hz Notch", true);
+            EMGDashboard.addChart(filtered, fs, "EMG - Spectrum After Bandpass 20–450 Hz", true);
+            EMGDashboard.addEnvelopeChart(result.getEnvelope(), result.getThresholdOn(), result.getThresholdOff(), fs, "EMG - Envelope + Thresholds");
             EMGDashboard.showAll();
         });
     }

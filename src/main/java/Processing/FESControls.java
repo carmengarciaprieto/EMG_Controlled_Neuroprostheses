@@ -20,20 +20,20 @@ public class FESControls {
             return; // Sale si no conecta
         }
 
-        int canal = 16;
+        int chanel = 16;
         try {
             powerOn();
-            System.out.println(">>> Estimulando canal " + canal);
+            System.out.println(">>> Estimulando canal " + chanel);
 
             // Configura amplitud, ancho de pulso y frecuencia
-            setCurrent(amplitud, canal);
-            setPulseWidth(anchoPulso, canal);
-            sendCommand("w " + canal + " re 0\r");
-            sendCommand("w " + canal + " in 0\r");
+            setCurrent(amplitud, chanel);
+            setPulseWidth(anchoPulso, chanel);
+            sendCommand("w " + chanel + " re 0\r");
+            sendCommand("w " + chanel + " in 0\r");
             setFrequency(frecuencia);
 
-            // Activa el canal con máscara (estado 1 para activo)
-            setMask(canal, 0);  // Llama a setMask simplificada
+            // Activa el chanel con máscara (estado 1 para activo)
+            setMask(chanel, 0);  // Llama a setMask simplificada
 
             sendCommand("e fl 0\r");  // fin de lista en índice 0
         } catch (IOException ex) {

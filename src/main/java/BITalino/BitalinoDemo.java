@@ -59,13 +59,13 @@ public class BitalinoDemo {
     // Guardar los datos grabados en un archivo
     private static void saveDataToFile(String fileName, ArrayList<Integer> data) throws IOException {
     // Ruta absoluta completa, incluyendo el nombre del archivo
-    String fullPath = "C:\\Users\\user\\Downloads\\TFG\\calibration_recordings\\" + fileName + ".txt";
+    String fullPath = "C:\\Users\\user\\Downloads\\TFG\\calibration_recordings\\" + fileName;
 
     try (FileWriter writer = new FileWriter(fullPath)) {
         for (Integer value : data) {
             writer.write(value + "\n");
         }
-        System.out.println("Data saved with name: " + fileName + ".txt");
+        System.out.println("Data saved with name: " + fileName);
         System.out.println("File saved in: " + new File(fullPath).getAbsolutePath());
     }
 }

@@ -14,23 +14,22 @@ import java.util.Scanner;
  */
 public class FESCalibration {
 
-    public static void calibration(String puerto, double amplitud, double frecuencia, double anchoPulso) throws IOException, InterruptedException {
+    public static void calibration(String port, double amplitude, double frequency, double pulseWidth) throws IOException, InterruptedException {
 
-        FESControls fes = new FESControls(puerto, amplitud, frecuencia, anchoPulso);
+        FESControls fes = new FESControls(port, amplitude, frequency, pulseWidth);
 
-            fes.startStimulation();
-            System.out.println("🟢 FES ACTIVADO (" + System.currentTimeMillis() + " ms)");
-            System.out.println("Estimulación iniciada. Presiona Enter para detener.");
+        fes.startStimulation();
+        System.out.println("🟢 FES ACTIVATED (" + System.currentTimeMillis() + " ms)");
+        System.out.println("Stimulation started. Press Enter to stop.");
 
-            // Espera a que el usuario presione Enter
-            Scanner scanner = new Scanner(System.in);
-            scanner.nextLine();  // Pausa hasta que se presione Enter
+        // Wait for the user to press Enter
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();  // Pauses until Enter is pressed
 
-            // Detener la estimulación si hay un método disponible
-            fes.stopStimulation(); 
-            fes.powerOff();
-            fes.disconnect();
-            System.out.println("Estimulación detenida.");
-
+        // Stop stimulation if a method is available
+        fes.stopStimulation(); 
+        fes.powerOff();
+        fes.disconnect();
+        System.out.println("Stimulation stopped.");
     }
 }
