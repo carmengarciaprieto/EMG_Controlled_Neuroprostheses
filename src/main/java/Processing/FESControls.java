@@ -16,24 +16,24 @@ public class FESControls {
     public FESControls(String portName, double amplitud, double frecuencia, double anchoPulso) {
         this.portName = portName;
         if (!connect()) {  // <-- Aquí se llama a fes.connect()
-            System.out.println("No se pudo conectar al dispositivo FES. Abortando activación.");
+            System.out.println("Could not connect to FES");
             return; // Sale si no conecta
         }
 
-        int chanel = 16;
+        int canal = 16;
         try {
             powerOn();
-            System.out.println(">>> Estimulando canal " + chanel);
+            System.out.println(">>> Stimulating channel " + canal);
 
             // Configura amplitud, ancho de pulso y frecuencia
-            setCurrent(amplitud, chanel);
-            setPulseWidth(anchoPulso, chanel);
-            sendCommand("w " + chanel + " re 0\r");
-            sendCommand("w " + chanel + " in 0\r");
+            setCurrent(amplitud, canal);
+            setPulseWidth(anchoPulso, canal);
+            sendCommand("w " + canal + " re 0\r");
+            sendCommand("w " + canal + " in 0\r");
             setFrequency(frecuencia);
 
-            // Activa el chanel con máscara (estado 1 para activo)
-            setMask(chanel, 0);  // Llama a setMask simplificada
+            // Activa el canal con máscara (estado 1 para activo)
+            setMask(canal, 0);  // Llama a setMask simplificada
 
             sendCommand("e fl 0\r");  // fin de lista en índice 0
         } catch (IOException ex) {
@@ -49,10 +49,10 @@ public class FESControls {
         serialPort.setParity(SerialPort.NO_PARITY); //sin paridad (no se detectan errores en la transmisión
 
         if (serialPort.openPort()) {
-            System.out.println("Conectado al dispositivo FES en " + portName);
+            System.out.println("Connecting FES in " + portName);
             return true;
         } else {
-            System.out.println("Error al conectar con el dispositivo " + portName);
+            System.out.println("Error connecting device " + portName);
             return false;
         }
     }
@@ -66,7 +66,7 @@ public class FESControls {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Fuente de alimentación encendida");
+        System.out.println("Power supply ON");
     }
 
     public void powerOff() {
@@ -78,7 +78,7 @@ public class FESControls {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Fuente de alimentación apagada");
+        System.out.println("Poweer supply OFF");
     }
 
     public void startStimulation() {
@@ -88,7 +88,7 @@ public class FESControls {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Estimulación iniciada");
+        System.out.println("Stimulation started");
     }
 
     public void stopStimulation() {
@@ -98,13 +98,13 @@ public class FESControls {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Estimulación detenida");
+        System.out.println("Stimulation stopped");
     }
 
     public void disconnect() {
         if (serialPort != null && serialPort.isOpen()) {
             serialPort.closePort();
-            System.out.println("Conexion cerrada");
+            System.out.println("Conexion closed");
         }
     }
 
@@ -113,16 +113,16 @@ public class FESControls {
         String command = "e lc " + canal + " " + estado + "\r";
         try {
             sendCommand(command);
-            System.out.println("Comando enviado: " + command);
+            System.out.println("Comand sent: " + command);
         } catch (IOException e) {
-            throw new RuntimeException("Error enviando comando al canal " + canal, e);
+            throw new RuntimeException("Error sending comand to channel " + canal, e);
         }
 
     }
 
     public void setFrequency(double frequency) {
         if (frequency <= 0) {
-            throw new IllegalArgumentException("La frecuencia debe ser mayor que 0");
+            throw new IllegalArgumentException("Frequency must be higher than 0");
         }
 
         int timeMs = (int) ((1.0 / frequency) / 0.0005); // convierte Hz a tiempo en ms
@@ -134,16 +134,16 @@ public class FESControls {
         try {
             sendCommand(command);
             sendCommand(command2);
-            System.out.println("Frecuencia configurada: " + frequency + " Hz (tiempo: " + timeMs + ")");
+            System.out.println("Frequency set: " + frequency + " Hz (tiempo: " + timeMs + ")");
         } catch (IOException e) {
-            throw new RuntimeException("Error al enviar el comando de frecuencia", e);
+            throw new RuntimeException("Error sending frequency comand", e);
         }
     }
 
     public void setPulseWidth(double pulseWidth, int canal) {
         int pulseValue = (int) ((pulseWidth - 27.6) / 2.4);
         if (pulseValue < 0) {
-            throw new IllegalArgumentException("El ancho de pulso debe ser mayor o igual a 27.6 ms");
+            throw new IllegalArgumentException("Pulse width must be higher or equal than 27.6 ms");
         }
         String command = "w " + canal + " tp " + pulseValue + "\r";  // Canal 16 fijo
         String command2 = "w " + canal + " tn " + pulseValue + "\r";  // Canal 16 fijo
@@ -151,17 +151,17 @@ public class FESControls {
         try {
             sendCommand(command);
             sendCommand(command2);
-            System.out.println("Ancho de pulso configurado: " + pulseWidth + " ms (valor: " + pulseValue + ")");
+            System.out.println("Pulse width set: " + pulseWidth + " ms (valor: " + pulseValue + ")");
         } catch (IOException e) {
-            throw new RuntimeException("Error al enviar el comando de ancho de pulso", e);
+            throw new RuntimeException("Error sending pulse width comand", e);
         }
     }
 
     public void setCurrent(double amplitude, int canal) {
         int currentValue = (int) (amplitude / 0.78);
-        System.out.println("Ancho de pulso configurado: " + amplitude + " ms (valor: " + currentValue + ")");
+        System.out.println("Pulse width set: " + amplitude + " ms (valor: " + currentValue + ")");
         if (currentValue < 0) {
-            throw new IllegalArgumentException("La amplitud debe ser mayor o igual a 0");
+            throw new IllegalArgumentException("Amplitude must be higher or equal than 0");
         }
         String command = "w " + canal + " ap " + currentValue + "\r";  // Canal 16 fijo
         String command2 = "w " + canal + " an " + currentValue + "\r";  // Canal 16 fijo
@@ -169,9 +169,9 @@ public class FESControls {
         try {
             sendCommand(command);
             sendCommand(command2);
-            System.out.println("Corriente configurada: " + amplitude + " mA (valor: " + currentValue + ")");
+            System.out.println("Current set: " + amplitude + " mA (valor: " + currentValue + ")");
         } catch (IOException e) {
-            throw new RuntimeException("Error al enviar el comando de corriente", e);
+            throw new RuntimeException("Error sending current comand", e);
         }
     }
 
@@ -193,10 +193,10 @@ public class FESControls {
 
         if (numBytes > 0) {
             String response = new String(buffer, 0, numBytes, StandardCharsets.UTF_8).trim();  // Convierte bytes a string
-            System.out.println("Respuesta: \"" + response + "\"");
+            System.out.println("Response: \"" + response + "\"");
 
         } else {
-            System.out.println("No se recibió respuesta del dispositivo.");
+            System.out.println("No response from the device.");
         }
     }
 }

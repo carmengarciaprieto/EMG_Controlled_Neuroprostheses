@@ -29,7 +29,6 @@ public class EMGRealTimeProcessing {
     private final List<Boolean> fesStates = new ArrayList<>();
     private final List<Double> emgValues = new ArrayList<>();
 
-    // Butterworth filters
     private Butterworth notchFilter;
     private Butterworth bandpassFilter;
     private final int fs = 1000; 
@@ -43,14 +42,14 @@ public class EMGRealTimeProcessing {
         this.pulseWidth = pulseWidth;
         this.user = user;
 
-        // Initialize filters
+
         notchFilter = new Butterworth();
         notchFilter.bandStop(4, fs, 50.0, 0.8);   
 
         bandpassFilter = new Butterworth();
         bandpassFilter.bandPass(4, fs, 20.0, 450.0);  
 
-        // Initialize FES
+
         fes = new FESControls(port, amplitude, frequency, pulseWidth);
     }
 
@@ -90,17 +89,17 @@ public class EMGRealTimeProcessing {
         }
         double envelope = sum / buffer.size();
 
-        // Save value for post-analysis
+
         emgValues.add(envelope);
 
-        // FES activation/deactivation control based on thresholds
+ 
         if (!fesActive && envelope > thresholdOn) {
             long emgTime = System.currentTimeMillis();
             emgTimestamps.add(emgTime);
             activateFES();
             fesActive = true;
 
-            // Save FES ON event
+
             fesTimestamps.add(emgTime);
             fesStates.add(true);
 
@@ -110,22 +109,20 @@ public class EMGRealTimeProcessing {
             deactivateFES();
             fesActive = false;
 
-            // Save FES OFF event
+
             fesTimestamps.add(emgTime);
             fesStates.add(false);
         }
     }
 
     public void activateFES() {
-        // Uncomment to enable actual stimulation
         fes.startStimulation();
-        System.out.println("🟢 FES ACTIVATED (" + System.currentTimeMillis() + " ms)");
+        System.out.println("FES ACTIVATED (" + System.currentTimeMillis() + " ms)");
     }
 
     public void deactivateFES() {
-        // Uncomment to disable actual stimulation
         fes.stopStimulation();
-        System.out.println("🔴 FES DEACTIVATED (" + System.currentTimeMillis() + " ms)");
+        System.out.println("FES DEACTIVATED (" + System.currentTimeMillis() + " ms)");
     }
 
     public void shutDownFES() {
@@ -151,7 +148,7 @@ public class EMGRealTimeProcessing {
             String dateTime = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
             String baseName = user + "_" + dateTime;
 
-            // Save events to CSV
+
             File eventsFile = new File(eventFolder, baseName + ".csv");
             try (PrintWriter writer = new PrintWriter(eventsFile)) {
                 writer.println("emg_timestamp_ms;fes_timestamp_ms;state");
@@ -161,7 +158,7 @@ public class EMGRealTimeProcessing {
                 }
             }
 
-            // Save complete EMG signal to TXT (one value per line)
+
             File signalFile = new File(signalFolder, baseName + ".txt");
             try (PrintWriter writer = new PrintWriter(signalFile)) {
                 for (Double val : emgValues) {

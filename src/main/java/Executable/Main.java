@@ -61,11 +61,11 @@ public class Main {
                     exit = true;
                     break;
                 default:
-                    System.out.println("❌ Invalid option. Try again.");
+                    System.out.println("Invalid option. Try again.");
                     break;
             }
         }
-        System.out.println("👋 Exiting program.");
+        System.out.println("Exiting program.");
         sc.close();
     }
 
@@ -76,16 +76,16 @@ public class Main {
 
             if (data != null && !data.isEmpty()) {
 
-                System.out.println("✅ Calibration recording completed.");
+                System.out.println("Calibration recording completed.");
                 result = EMGCalibration.calculateThreshold(data, 1000);
-                System.out.printf("📊 Threshold ON: %.4f mV%n", result.getThresholdOn());
-                System.out.printf("📊 Threshold OFF: %.4f mV%n", result.getThresholdOff());
+                System.out.printf("Threshold ON: %.4f mV%n", result.getThresholdOn());
+                System.out.printf("Threshold OFF: %.4f mV%n", result.getThresholdOff());
 
             } else {
-                System.out.println("❌ The recording was empty or cancelled.");
+                System.out.println("The recording was empty or cancelled.");
             }
         } catch (Throwable t) {
-            System.err.println("❌ Error during calibration: " + t.getMessage());
+            System.err.println("Error during calibration: " + t.getMessage());
         }
     }
 
@@ -100,16 +100,16 @@ public class Main {
         try {
             bitalino.open(macAddress, sampleRate);
         } catch (Exception e) {
-            System.err.println("❌ Could not connect to BITalino.");
+            System.err.println("Could not connect to BITalino.");
             return null;
         }
 
         bitalino.start(channelsToAcquire);
 
-        // ✅ External stop control
+
         AtomicBoolean stopFlag = new AtomicBoolean(false);
 
-        System.out.println("⏺ Recording... Press ENTER to stop.");
+        System.out.println("Recording... Press ENTER to stop.");
         Thread inputThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -141,7 +141,7 @@ public class Main {
         try {
             bitalino.open(macAddress, sampleRate);
         } catch (Exception e) {
-            System.err.println("❌ Could not connect to BITalino.");
+            System.err.println("Could not connect to BITalino.");
             return;
         }
 
@@ -166,22 +166,20 @@ public class Main {
 
         System.out.println("🔄 Starting real-time analysis...");
 
-        // Create plotter
         RealTimePlotter plotter = new RealTimePlotter("Real-Time EMG");
 
         EMGRealTimeProcessing processor = new EMGRealTimeProcessing(200, thresholdOn, thresholdOff, port, amplitude, frequency, pulseWidth, user);
         AtomicBoolean stopFlag = new AtomicBoolean(false);
 
-        System.out.println("🟢 Real-time processing... Press ENTER to stop.");
+        System.out.println("Real-time processing... Press ENTER to stop.");
         Thread inputThread = new Thread(() -> {
             new Scanner(System.in).nextLine();
             stopFlag.set(true);
         });
         inputThread.start();
 
-        // Parameters for proper conversion:
         final double VCC = 3.0;
-        final double gain = 1000.0;  // Adjust if your amplifier has different gain
+        final double gain = 1000.0;  
         final int ADC_RESOLUTION = 1024;
 
         while (!stopFlag.get()) {
@@ -189,7 +187,7 @@ public class Main {
                 Frame[] frames = bitalino.read(1);  // Read 1 frame
 
                 if (frames == null || frames.length == 0) {
-                    System.err.println("⚠️ No frames received from BITalino.");
+                    System.err.println("No frames received from BITalino.");
                     Thread.sleep(10);
                     continue;
                 }
@@ -221,7 +219,7 @@ public class Main {
         bitalino.stop();
         bitalino.close();
 
-        System.out.println("🛑 Session ended.");
+        System.out.println("Session ended.");
     }
 
     public static void FESCalibration() {
@@ -235,7 +233,7 @@ public class Main {
             String port = "COM23";
             FESCalibration.calibration(port, amplitude, frequency, pulseWidth);
         } catch (Throwable t) {
-            System.err.println("❌ Error during calibration: " + t.getMessage());
+            System.err.println("Error during calibration: " + t.getMessage());
         }
     }
 }

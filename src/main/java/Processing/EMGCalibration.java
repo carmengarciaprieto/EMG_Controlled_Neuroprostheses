@@ -133,7 +133,6 @@ public class EMGCalibration {
         return envelope;
     }
 
-    // Classic method based on k*std
     public static ContractionResult detectContractions(double[] envelope, int fs, double kOn, double kOff, double minDurationSec) {
         double mean = Arrays.stream(envelope).average().orElse(0);
         double std = Math.sqrt(Arrays.stream(envelope).map(v -> Math.pow(v - mean, 2)).average().orElse(0));

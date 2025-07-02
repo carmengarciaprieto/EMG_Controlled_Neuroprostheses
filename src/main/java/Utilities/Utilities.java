@@ -37,18 +37,6 @@ public class Utilities {
         return text;
     }
 
-    public static void displayRecordingInstructions() {
-        System.out.println("\n  Recording Instructions ===");
-        System.out.println("1. Place the electrodes on the extensor muscle:\n"
-                + "   - Electrode 1 (Red): Upper part of the extensor muscle.\n"
-                + "   - Electrode 2 (Black): 2-3 cm below Electrode 1, along the muscle line.\n"
-                + "   - Electrode 3 (White - Ground): On the elbow.\n"
-                + "2. Make movement.\n"
-                + "3. Avoid unnecessary external movements.");
-
-        System.out.println("\n The recording will last 60 seconds.");
-    }
-
     public static String getValidMacAddress() {
         String macAddress;
         while (true) {
